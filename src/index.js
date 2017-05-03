@@ -2,14 +2,32 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
+import promise from 'redux-promise';
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch
+} from 'react-router-dom';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import App from './components/app';
+import PostsIndex from './components/posts_index';
+import PostsNew from './components/posts_new';
 import reducers from './reducers';
 
-const createStoreWithMiddleware = applyMiddleware()(createStore);
+const createStoreWithMiddleware = applyMiddleware(promise)(createStore);
 
 ReactDOM.render(
   <Provider store={createStoreWithMiddleware(reducers)}>
-    <App />
+    <MuiThemeProvider>
+    <Router>
+      <div>
+        <Switch>
+          <Route path="/posts/new" component={PostsNew}/>
+          <Route exact path="/" component={PostsIndex}/>
+        </Switch>
+      </div>
+    </Router>
+    </MuiThemeProvider>
   </Provider>
   , document.querySelector('.container'));
