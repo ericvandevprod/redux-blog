@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { createPost } from '../actions';
 import { Field, reduxForm } from 'redux-form';
 import { TextField, RaisedButton } from 'material-ui';
 
@@ -10,15 +13,12 @@ class PostNew extends Component {
 
   static validate(values) {
     const errors = {};
-    const requiredFields = [ 'title', 'tags', 'content', 'email' ];
+    const requiredFields = [ 'title', 'categories', 'content'];
     requiredFields.forEach(field => {
       if (!values[ field ]) {
         errors[ field ] = 'Required';
       }
     });
-    if (values.email && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-      errors.email = 'Invalid email address';
-    }
     return errors;
   }
 
@@ -32,7 +32,9 @@ class PostNew extends Component {
   );
 
   onSubmit = (values) => {
-    console.log(values);
+    this.props.createPost(values, () => {
+      this.props.history.push('/');
+    });
   };
 
   render() {
@@ -44,16 +46,16 @@ class PostNew extends Component {
             <Field name="title" component={this.renderTextField} label="Title" />
           </div>
           <div>
-            <Field name="tags" component={this.renderTextField} label="Category" />
+            <Field name="categories" component={this.renderTextField} label="Category" />
           </div>
           <div>
             <Field name="content" component={this.renderTextField} label="Content" />
           </div>
-          <div>
-            <Field name="email" component={this.renderTextField} label="Email" />
-          </div>
-          <div>
-            <RaisedButton type="submit" label="Primary" primary={true} style={{margin: '30px auto'}} />
+          <div style={{display: 'inline-block'}}>
+            <RaisedButton type="submit" label="Create" primary={true} style={{margin: '20px 0 0 20px'}} />
+            <Link to="/">
+              <RaisedButton label="Cancel" secondary={true} style={{margin: '20px 0 0 20px'}} />
+            </Link>
           </div>
         </form>
     )
@@ -63,4 +65,4 @@ class PostNew extends Component {
 export default reduxForm({
   form: 'PostNewForm',
   validate: PostNew.validate
-})(PostNew);
+})(connect(null, { createPost }) (PostNew));
